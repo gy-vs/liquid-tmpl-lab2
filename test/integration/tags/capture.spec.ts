@@ -39,4 +39,24 @@ describe('tags/capture', function () {
     const html = liquid.parseAndRenderSync(src)
     return expect(html).toBe('A')
   })
+
+  describe('with keepOutputType enabled', function () {
+    const typed = new Liquid({ keepOutputType: true })
+    it('should always capture as string regardless of value type', function () {
+      const src = '{% capture c %}{{ n }}{% endcapture %}{{ c }}'
+      expect(typed.parseAndRenderSync(src, { n: 5 })).toBe('5')
+    })
+    it('should capture falsy boolean as a truthy string', function () {
+      const src = '{% capture c %}{{ f }}{% endcapture %}{% if c %}truthy{% else %}falsy{% endif %}'
+      expect(typed.parseAndRenderSync(src, { f: false })).toBe('truthy')
+    })
+    it('should capture null as empty string', function () {
+      const src = '{% capture c %}{{ nil }}{% endcapture %}{% if c == "" %}eq{% else %}ne{% endif %}'
+      expect(typed.parseAndRenderSync(src, { nil: null })).toBe('eq')
+    })
+    it('should stringify captured objects', function () {
+      const src = '{% capture c %}{{ obj }}{% endcapture %}{% if c.k %}prop{% else %}noprop{% endif %}'
+      expect(typed.parseAndRenderSync(src, { obj: { k: 'v' } })).toBe('noprop')
+    })
+  })
 })

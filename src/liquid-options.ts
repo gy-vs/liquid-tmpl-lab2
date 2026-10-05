@@ -76,7 +76,7 @@ export interface LiquidOptions {
   templates?: {[key: string]: string};
   /** the global scope passed down to all partial and layout templates, i.e. templates included by `include`, `layout` and `render` tags. */
   globals?: object;
-  /** Whether or not to keep value type when writing the Output, not working for streamed rendering. Defaults to `false`. */
+  /** Whether or not to keep value type of the render result when the template outputs a single isolated value. Internal renders like `capture` always yield strings, and it's not working for streamed rendering. Defaults to `false`. */
   keepOutputType?: boolean;
   /** Default escape filter applied to output values, when set, you'll have to add `| raw` for values don't need to be escaped. Defaults to `undefined`. */
   outputEscape?: OutputEscapeOption;

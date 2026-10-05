@@ -3,6 +3,7 @@ import { toPromise, toValueSync, isFunction, forOwn, isString, strictUniq } from
 import { TagClass, createTagClass, TagImplOptions, FilterImplOptions, Template, Value, StaticAnalysisOptions, StaticAnalysis, analyze, analyzeSync, SegmentArray } from './template'
 import { LookupType } from './fs/loader'
 import { Render } from './render'
+import { KeepingTypeEmitter } from './emitters'
 import { Parser } from './parser'
 import { tags } from './tags'
 import { filters } from './filters'
@@ -32,7 +33,8 @@ export class Liquid {
 
   public _render (tpl: Template[], scope: Context | object | undefined, renderOptions: RenderOptions): IterableIterator<any> {
     const ctx = scope instanceof Context ? scope : new Context(scope, this.options, renderOptions)
-    return this.renderer.renderTemplates(tpl, ctx)
+    const emitter = this.options.keepOutputType ? new KeepingTypeEmitter() : undefined
+    return this.renderer.renderTemplates(tpl, ctx, emitter)
   }
   public async render (tpl: Template[], scope?: object, renderOptions?: RenderOptions): Promise<any> {
     return toPromise(this._render(tpl, scope, { ...renderOptions, sync: false }))

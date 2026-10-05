@@ -2,7 +2,7 @@ import { getPerformance } from '../util/performance'
 import { toPromise, RenderError, LiquidErrors, LiquidError } from '../util'
 import { Context } from '../context'
 import { Template } from '../template'
-import { Emitter, KeepingTypeEmitter, StreamedEmitter, SimpleEmitter } from '../emitters'
+import { Emitter, StreamedEmitter, SimpleEmitter } from '../emitters'
 
 export class Render {
   public renderTemplatesToNodeStream (templates: Template[], ctx: Context): NodeJS.ReadableStream {
@@ -12,8 +12,11 @@ export class Render {
     return emitter.stream
   }
   public * renderTemplates (templates: Template[], ctx: Context, emitter?: Emitter): IterableIterator<any> {
+    // Internal renders (capture/layout blocks/rendered file names) always produce
+    // strings, regardless of `keepOutputType`. The top-level render entry passes
+    // in a `KeepingTypeEmitter` explicitly when `keepOutputType` is enabled.
     if (!emitter) {
-      emitter = ctx.opts.keepOutputType ? new KeepingTypeEmitter() : new SimpleEmitter()
+      emitter = new SimpleEmitter()
     }
     const errors = []
     for (const tpl of templates) {
