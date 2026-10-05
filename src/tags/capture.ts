@@ -1,4 +1,5 @@
 import { Liquid, Tag, Template, Context, TagToken, TopLevelToken } from '..'
+import { SimpleEmitter } from '../emitters'
 import { Parser } from '../parser'
 import { IdentifierToken, QuotedToken } from '../tokens'
 import { isTagToken } from '../util'
@@ -30,7 +31,9 @@ export default class extends Tag {
 
   * render (ctx: Context): Generator<unknown, void, string> {
     const r = this.liquid.renderer
-    const html = yield r.renderTemplates(this.templates, ctx)
+    // capture always stores the rendered output as string,
+    // regardless of keepOutputType
+    const html = yield r.renderTemplates(this.templates, ctx, new SimpleEmitter())
     ctx.bottom()[this.variable] = html
   }
 

@@ -2,6 +2,7 @@ import { __assign } from 'tslib'
 import { ForloopDrop } from '../drop'
 import { isString, isValueToken, toEnumerable } from '../util'
 import { TopLevelToken, assert, Liquid, Token, Template, evalQuotedToken, TypeGuards, Tokenizer, evalToken, Hash, Emitter, TagToken, Context, Tag } from '..'
+import { SimpleEmitter } from '../emitters'
 import { Parser } from '../parser'
 import { Argument, Arguments, PartialScope } from '../template'
 
@@ -164,6 +165,7 @@ function optimize (templates: Template[]): string | Template[] {
 
 export function * renderFilePath (file: ParsedFileName, ctx: Context, liquid: Liquid): IterableIterator<unknown> {
   if (typeof file === 'string') return file
-  if (Array.isArray(file)) return liquid.renderer.renderTemplates(file, ctx)
+  // a file name is always a string, regardless of keepOutputType
+  if (Array.isArray(file)) return liquid.renderer.renderTemplates(file, ctx, new SimpleEmitter())
   return yield evalToken(file, ctx)
 }

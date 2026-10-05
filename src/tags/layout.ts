@@ -1,4 +1,5 @@
 import { Scope, Template, Liquid, Tag, assert, Emitter, Hash, TagToken, TopLevelToken, Context } from '..'
+import { SimpleEmitter } from '../emitters'
 import { BlockMode } from '../context'
 import { parseFilePath, renderFilePath, ParsedFileName } from './render'
 import { BlankDrop } from '../drop'
@@ -31,7 +32,8 @@ export default class extends Tag {
 
     // render remaining contents and store rendered results
     ctx.setRegister('blockMode', BlockMode.STORE)
-    const html = yield renderer.renderTemplates(this.templates, ctx)
+    // the captured content is a string like {% capture %}, regardless of keepOutputType
+    const html = yield renderer.renderTemplates(this.templates, ctx, new SimpleEmitter())
     const blocks = ctx.getRegister('blocks')
 
     // set whole content to anonymous block if anonymous doesn't specified
